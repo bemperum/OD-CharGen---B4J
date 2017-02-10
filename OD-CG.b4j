@@ -1,0 +1,343 @@
+﻿Version=4.7
+AppType=JavaFX
+NumberOfModules=2
+Module1=GUI_Helpers
+Module2=ODChar
+Build1=Default,net.bemperum.rpg,Full
+NumberOfFiles=3
+File1=mainWindow.bjl
+File2=ODCG_icon.png
+File3=Skills.txt
+NumberOfLibraries=3
+Library1=jcore
+Library2=jfx
+Library3=javaobject
+@EndOfDesignText@
+#Region Project Attributes 
+	' We start at this size:
+	#MainFormWidth: 600
+	#MainFormHeight: 600 
+#End Region
+
+Sub Process_Globals
+	Private fx As JFX
+	Private MainForm As Form ' Our main window
+	
+	' GUI Items:
+	Private fldCharClever As Slider
+	Private fldCharDefence As TextField
+	Private fldCharDescription As TextArea
+	Private fldCharHealth As TextField
+	Private fldCharMove As TextField
+	Private fldCharName As TextField
+	Private fldCharQuick As Slider
+	Private fldCharStrong As Slider
+	Private fldCharMagic As Slider
+	Private lblPTS As Label
+	Private skillChoiceBox As ChoiceBox
+	Private lblSkillPTS As Label
+	Private tblSkills As TableView
+	
+	' Own items for editable Cells for runtime
+	Type CellIndex (Row As Int, Column As Int)
+	Private currentEditableCell As CellIndex
+End Sub
+
+Sub AppStart (Form1 As Form, Args() As String)
+	MainForm = Form1
+	MainForm.RootPane.LoadLayout("mainWindow") 'Load the layout file.
+	MainForm.Show
+	
+	ConfigSliders
+	calculateStats
+	LoadSkills
+	' Own Items
+	currentEditableCell.Row = -1
+	
+	tblSkills.SetColumnWidth(0, 80)
+	tblSkills.SetColumnWidth(1, 80)
+	tblSkills.SetColumnWidth(3, 60)
+	Dim width As Int = tblSkills.Width
+	tblSkills.SetColumnWidth(2, (width-80-80-60-5)) ' Constants here!
+	lblSkillPTS.Text = "6" ' set the available skill points to 6
+End Sub
+
+Sub ConfigSliders()
+	'
+	' Make configurations to the sliders
+	'
+	Dim sliders() As Slider
+	sliders = Array As Slider(fldCharStrong, fldCharQuick, fldCharClever)
+	For Each thisSlider As Slider In sliders
+		GUI_Helpers.SetSliderSticky(thisSlider, 1.0, 3.0, 2.0)
+	Next
+	GUI_Helpers.SetSliderSticky(fldCharMagic, 0.0, 3.0, 0.0)
+End Sub
+
+Sub mnuMain_Action
+	'
+	' Handle all Menu Items:
+	'
+	Dim mi As MenuItem = Sender
+
+	Select mi.Text
+		Case "_New"
+			
+		Case "_Open"
+			
+		Case "_Save"
+			
+		Case "_Quit"
+			ExitApplication
+			
+		Case "Clear"
+			ClearAndResetGUI
+			
+		Case "Randomize"
+			
+		Case "Copy to clipboard"
+			CopyToClipboard
+		Case "Help"
+			
+		Case "About"
+			
+	End Select
+End Sub
+
+Sub CopyToClipboard
+	' Copy the informtion to the clipboard:
+	Dim completeString As String
+	
+	If CheckFields Then
+		' Name and Description
+		completeString = "Name: " & fldCharName.Text & CRLF
+		completeString = completeString & "Description: " & fldCharDescription.Text & CRLF & CRLF
+		
+		' Attributes
+		completeString = completeString & "Strong: " & fldCharStrong.Value & CRLF
+		completeString = completeString & "Quick: " & fldCharQuick.Value & CRLF
+		completeString = completeString & "Clever: " & fldCharClever.Value & CRLF & CRLF
+		
+		' Stats
+		completeString = completeString & "Health: " & fldCharHealth.Text & CRLF
+		completeString = completeString & "Defence: " & fldCharDefence.Text & CRLF
+		completeString = completeString & "Move: " & fldCharMove.Text & CRLF & CRLF
+		
+		' Skills
+		completeString = completeString & "SKILLS:" & CRLF 
+		completeString = completeString & getSkillsFromTable
+		
+		' -----------------------------------
+		fx.Clipboard.SetString(completeString)
+	Else
+		fx.Msgbox2(MainForm, _ 
+					"You need a name/description", _ 
+					"Incomplete Information", _ 
+					"Okay", _ 
+					"", _ 
+					"", _
+					fx.MSGBOX_INFORMATION)		
+	End If
+End Sub
+
+Sub getSkillsFromTable() As String
+	Dim sklTxt As String = ""
+	Dim vals() As Object
+	Dim tf As TextField
+	If(tblSkills.Items.Size > 0) Then
+	For i = 0 To (tblSkills.Items.Size - 1)
+		vals = tblSkills.Items.Get(i)
+		tf = vals(3)
+		sklTxt = sklTxt & vals(0) & " - (" & vals(1) & ") - " & tf.Text & CRLF
+	Next
+	End If
+	Return sklTxt
+End Sub
+
+Sub sliders_ValueChanged(Value As Double)
+	' The Sliders have all the same functionality.
+	' This is the handler for them.
+	calculateStats
+	calcPoints
+End Sub
+
+Sub fldCharStrong_ValueChange (Value As Double)
+	sliders_ValueChanged(Value)
+	calcPoints
+End Sub
+
+Sub fldCharQuick_ValueChange (Value As Double)
+	sliders_ValueChanged(Value)
+	calcPoints
+End Sub
+
+Sub fldCharClever_ValueChange (Value As Double)
+	sliders_ValueChanged(Value)
+	calcPoints
+End Sub
+
+Sub fldCharMagic_ValueChange (Value As Double)
+	sliders_ValueChanged(Value)
+	calcPoints	
+End Sub
+
+Sub CheckFields As Boolean
+	If(fldCharName.Text = "") Or (fldCharDescription.Text = "") Then
+		Return False
+	Else
+		Return True
+	End If
+End Sub
+
+Sub calculateStats
+	fldCharHealth.Text = ODChar.calculateHealth(Floor(fldCharStrong.Value))
+	fldCharDefence.Text = ODChar.calculateDefence( _
+							Floor(fldCharStrong.Value), _
+							Floor(fldCharQuick.Value) _
+							)
+	fldCharMove.Text = ODChar.calculateMove(Floor(fldCharQuick.Value))
+End Sub
+
+Sub ClearAndResetGUI()
+	' Clear NAME
+	fldCharName.Text = ""	
+	fldCharDescription.Text = ""
+	' Clear Strong, Clever, Quick and Magic
+	fldCharClever.Value = 1
+	fldCharMagic.Value = 0
+	fldCharQuick.Value = 1
+	fldCharStrong.Value = 0
+	' Recalculate Stats (Halth, Defence, Move)
+	calculateStats
+	' Clear table
+	tblSkills.Items.Clear
+End Sub
+
+Sub calcPoints
+	Dim totalP As Int = 6 ' Maximum 6 pts for ATTRIBUTES
+	Dim sum As Int
+	Dim currentPTS As Int 
+	
+	sum = (fldCharClever.Value + _
+		fldCharMagic.Value + _
+		fldCharQuick.Value + _
+		fldCharStrong.Value)
+		
+	currentPTS = (totalP - sum)
+	
+	If (currentPTS < 0) Or (sum > totalP) Then
+		lblPTS.TextColor = 	fx.Colors.Red
+	Else
+		lblPTS.TextColor = fx.Colors.Black
+	End If
+	lblPTS.Text = currentPTS
+End Sub
+
+Sub skillChoiceBox_SelectedIndexChanged(Index As Int, Value As Object)
+	Dim SKL_STD_VAlUE As Int = 1
+	Dim thisTxt As String
+	Dim ci As CellIndex
+	Dim lbl As TextField
+	Dim row(4) As Object
+	
+	thisTxt = Value
+	Dim currentEntry() As String = Regex.Split(";", thisTxt)
+	
+	ci.Column = 4
+	ci.Row = tblSkills.Items.Size
+	row(0) = currentEntry(0)
+	row(1) = currentEntry(1)
+	row(2) = currentEntry(2)
+	lbl = CreateItem(SKL_STD_VAlUE, ci)
+	row(3) = lbl
+	tblSkills.Items.Add(row)
+End Sub
+
+Sub LoadSkills
+	Dim content As List = File.ReadList(File.DirAssets, "Skills.txt")
+	skillChoiceBox.Items.Clear
+	skillChoiceBox.Items.AddAll(content)
+End Sub
+
+' EDITABLE TABLEVIEW ACTIONS
+' ##############################################################
+Sub CreateItem (text As String, ci As CellIndex) As TextField
+	' Create a new textfield item at runtime to edit.
+	Dim tf As TextField
+	tf.Initialize("tf")
+	tf.Text = text
+	tf.Tag = ci
+	tf.Editable = False
+	Return tf
+End Sub
+
+Sub tf_MouseClicked (EventData As MouseEvent)
+	If EventData.ClickCount = 2 Then
+		Dim tf As TextField = Sender
+		Dim ci As CellIndex = tf.Tag
+		If currentEditableCell.Column <>ci.Column Or currentEditableCell.Row <> ci.Row Then
+			EndEdit
+		End If
+		currentEditableCell.Column = ci.Column
+		currentEditableCell.Row = ci.Row
+		tblSkills.SelectedRow = ci.Row
+		CallSubDelayed2(Me, "StartEdit", tf)
+	End If
+End Sub
+
+Sub tf_Action
+	Dim tf As TextField = Sender
+	Dim cVal As String = tf.Text
+	' On Input or on Enter,
+	' we check wether the format is okay or not.
+	If(IsNumber(cVal)) Then
+		If(cVal < 1) Or (cVal > 3) Then
+			fx.Msgbox2(MainForm, _
+						"Your input must be between 1 and 3 please...", _
+						"Input Error", _
+						"Okay, got it!", _
+						"", _
+						"", _
+						fx.MSGBOX_INFORMATION)
+		Else
+			' TODO: Check/Recaluclate the values....
+		End If
+	Else
+		fx.Msgbox2(MainForm, _
+					"Your input is not a number between 1 and 3.", _ 
+					"Format Error", _
+					"Okay, got it!", _
+					"", _
+					"", _
+					fx.MSGBOX_ERROR)
+	End If
+	EndEdit
+End Sub
+
+Sub StartEdit (tf As TextField)
+	tf.RequestFocus
+	tf.Editable = True
+	tf.SelectAll
+End Sub
+
+Sub EndEdit
+	If currentEditableCell.Row >= 0 Then
+		Dim row() As Object = tblSkills.Items.Get(currentEditableCell.Row)
+		Dim tf As TextField = row(currentEditableCell.Column-1) ' no idea why to decrease the index here.
+		tf.Editable = False
+		tblSkills.RequestFocus
+	End If
+	currentEditableCell.Row = -1
+End Sub
+' END EDITABLE TABLE VIEW
+' ##############################################################
+
+Sub mnuDeleteTableItem_Action
+	' Delete the current LINE,
+	' it is not the HEADER line.
+	Dim currentItem As Int
+	currentItem = tblSkills.SelectedRow
+	If(currentItem > -1) Then
+		tblSkills.Items.RemoveAt(currentItem)	
+	End If
+End Sub

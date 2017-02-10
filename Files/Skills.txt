@@ -1,0 +1,40 @@
+Acrobatics; Quick; Good at acrobatic moves.
+Archery; Quick; Good with bows.
+Artillery; Clever; Good at firing artillery weapons.
+Art; Clever; Good at creating art.
+Blades; Strong; Good at hand-to-hand fighting with a bladed weapon (sword, axe, laser-stick, etc.).
+Bludgeon; Strong; Good at hand-to-hand fighting with a blunt weapon (hammer, club, cosh, etc.).
+Bruiser; Strong; Good at unarmed fighting (punching, kicking, head butting, etc.).
+Climb; Quick; Good at climbing.
+Command; Clever; Good at giving orders.
+Computers; Clever; Good at building, repairing and using computers
+Craft; Clever; Good at making and repairing things.
+Cryptology; Clever; Good at creating and breaking codes.
+Disguise; Clever; Good at carrying off a disguise.
+Dodgy; Clever; Good at dealing with criminals and being streetwise.
+Drive; Quick; Good at driving an automobile, hover-car, horse and cart, etc
+Engineering; Clever; Good at building, repairing and understanding engines.
+Entertainer; Quick; Good at entertaining others (by singing, dancing, juggling grenades, etc.).
+Gambling; Quick; Good at gambling (and cheating).
+Intimidate; Strong; Good at bullying others.
+Investigation; Clever; Good at looking for and analysing clues.
+Language; Clever; Good at speaking a language (other than the character's own). Each language is a separate skill.
+Lore; Clever; Good at knowing stuff.
+Medicine; Clever; Good at healing people. Only people with medicine (or magic) can restore Health.
+Navigate; Clever; Good at reading maps and following them.
+Negotiate; Clever; Good at talking their way out of trouble.
+Perception; Quick; Good at noticing and hearing things.
+Pilot; Clever; Good at piloting an aircraft, sea craft or spaceship, etc.
+Pickpocket; Quick; Good at picking pockets.
+Psychology; Clever; Good at reading people's emotions and noticing when they are lying.
+Research; Clever; Good at researching a topic (using libraries, computer archives, etc).
+Science; Clever; Good at science.
+Security; Clever; Good at creating or picking locks;  arming or disarming traps;  etc.
+Shooting; Clever; Good at firing a gun.
+Sneaky; Quick; Good at creeping up on people or hiding from them.
+Survival; Clever; Good at surviving in the wilderness.
+Swim; Strong; Good at swimming.
+Teaching; Clever; Good at getting basic concepts over to others.
+Throw; Quick; Good at throwing weapons (such as axes, daggers, etc.).
+Track; Clever; Good at finding and following tracks.
+Trade; Clever; Good at spotting a bargain, selling and negotiating a good price.
